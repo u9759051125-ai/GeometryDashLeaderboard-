@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Dash Demonlist Hub</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { background-color: #f4f5f7; color: #333; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Header Pointercrate Style */
+        header { width: 100%; max-width: 960px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #fff; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .logo { font-size: 1.4rem; font-weight: 700; color: #444; text-transform: uppercase; letter-spacing: 0.5px; }
+        .logo span { color: #007bff; }
+        
+        /* Navigazione Tab */
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+        .tab-btn { background: #fff; border: 1px solid #dcdfe6; color: #606266; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: 600; font-size: 0.9rem; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #f9faec; border-color: #c0c4cc; }
+        .tab-btn.active { background: #007bff; color: #fff; border-color: #007bff; box-shadow: 0 2px 4px rgba(0,123,255,0.25); }
+        
+        .container { width: 100%; max-width: 960px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Grid dei livelli stile Pointercrate Card */
+        .list-container { display: flex; flex-direction: column; gap: 12px; }
+        .card { background: #fff; border-radius: 6px; border: 1px solid #e2e8f0; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        
+        .card-left { display: flex; align-items: center; gap: 18px; }
+        .rank-badge { font-size: 1.25rem; font-weight: 800; color: #2d3748; min-width: 50px; }
+        .level-info .title { font-size: 1.15rem; font-weight: 700; color: #1a202c; text-decoration: none; }
+        .level-info .publisher { font-size: 0.88rem; color: #718096; margin-top: 3px; }
+        .level-info .publisher strong { color: #4a5568; }
+        
+        .card-right { text-align: right; }
+        .extra-info { font-size: 0.85rem; color: #a0aec0; }
+        .score-tag { background: #edf2f7; color: #2b6cb0; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">POINTERCRATE <span>DEMONLIST</span></div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('demons', this)">Demon List Main</button>
+        <button class="tab-btn" onclick="showTab('players', this)">Top Players</button>
+        <button class="tab-btn" onclick="showTab('ill', this)">ILL Top 50</button>
+    </div>
+
+    <div class="container">
+        <!-- DEMON LIST -->
+        <div id="demons" class="tab-content active">
+            <div id="demon-list" class="list-container"></div>
+        </div>
+
+        <!-- TOP PLAYERS -->
+        <div id="players" class="tab-content">
+            <div id="player-list" class="list-container"></div>
+        </div>
+
+        <!-- ILL LIST -->
+        <div id="ill" class="tab-content">
+            <div id="ill-list" class="list-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const database = {
+            demon_list_main: [
+                { rank: 1, name: "Society", publisher: "Neomarbilan", verifier: "Trick" },
+                { rank: 2, name: "Thinking Space II", publisher: "CairoX", verifier: "wpopoff" },
+                { rank: 3, name: "Amethyst", publisher: "iMist", verifier: "Doggie" },
+                { rank: 4, name: "Tidal Wave", publisher: "Onilink", verifier: "Zoink" },
+                { rank: 5, name: "Nullscapes", publisher: "Kyouki Team", verifier: "Zoink" },
+                { rank: 6, name: "Acheron", publisher: "Rampage", verifier: "Zoink" },
+                { rank: 7, name: "Avernus", publisher: "Pingu", verifier: "Zoink" },
+                { rank: 8, name: "Slaughterhouse", publisher: "icedcave", verifier: "Doggie" },
+                { rank: 9, name: "Kyouki", publisher: "Kley", verifier: "Endlevel" },
+                { rank: 10, name: "Abyss of Darkness", publisher: "Exen", verifier: "Exen" },
+                { rank: 11, name: "SAKUPEN CIRCLES", publisher: "Nick26", verifier: "Diamond" },
+                { rank: 12, name: "FIREWORK", publisher: "Triangle", verifier: "Trick" },
+                { rank: 13, name: "MINUSdry", publisher: "CDMusic", verifier: "wpopoff" },
+                { rank: 14, name: "Solar Flare", publisher: "Exen", verifier: "Diamond" },
+                { rank: 15, name: "Hard Machine", publisher: "Shibuyas", verifier: "Cursed" }
+            ],
+            top_players: [
+                { rank: 1, name: "Zoink", score: "3551.84", nationality: "US" },
+                { rank: 2, name: "Trick", score: "3502.10", nationality: "US" },
+                { rank: 3, name: "wpopoff", score: "3453.45", nationality: "US" },
+                { rank: 4, name: "Doggie", score: "3404.90", nationality: "US" },
+                { rank: 5, name: "Cursed", score: "3355.12", nationality: "UK" },
+                { rank: 6, name: "Cuani", score: "3306.40", nationality: "AR" },
+                { rank: 7, name: "SpaceUK", score: "3257.00", nationality: "UK" },
+                { rank: 8, name: "Endlevel", score: "3208.75", nationality: "DE" },
+                { rank: 9, name: "Atomic", score: "3159.20", nationality: "US" },
+                { rank: 10, name: "BrainETM", score: "3110.15", nationality: "KR" }
+            ],
+            impossible_levels_list: [
+                { rank: 1, name: "Cyclolcyc", creators: "Aoyagi & More", tps_fps: "Physically Impossible" },
+                { rank: 2, name: "Misanthrope", creators: "Rythm & More", tps_fps: "Physically Impossible" },
+                { rank: 3, name: "Ballistic Wistfully", creators: "Shukketsu", tps_fps: "Impossible" },
+                { rank: 4, name: "Rain", creators: "Skya", tps_fps: "Impossible" },
+                { rank: 5, name: "Acheron (Unnerfed)", creators: "Rampage", tps_fps: "Unnerfed Top 1" },
+                { rank: 6, name: "Silent Circles (Original)", creators: "Sailent", tps_fps: "Unbeatable Spam" },
+                { rank: 7, name: "Death Corridor (Old)", creators: "KaotikJumper", tps_fps: "Unnerfed" },
+                { rank: 8, name: "Element 111 Rg (Old)", creators: "Stormfly", tps_fps: "Lost Level" },
+                { rank: 9, name: "Sonic Wave Infinity (Unnerfed)", creators: "Cyclic", tps_fps: "Impossible Wave" },
+                { rank: 10, name: "Formidable", creators: "Exen", tps_fps: "Frame Perfect" }
+            ]
+        };
+
+        function showTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function loadData() {
+            // Demon List
+            const demonContainer = document.getElementById('demon-list');
+            demonContainer.innerHTML = '';
+            database.demon_list_main.forEach(item => {
+                demonContainer.innerHTML += `
+                    <div class="card">
+                        <div class="card-left">
+                            <div class="rank-badge">#${item.rank}</div>
+                            <div class="level-info">
+                                <div class="title">${item.name}</div>
+                                <div class="publisher">published by <strong>${item.publisher}</strong></div>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <div class="extra-info">Verified by ${item.verifier}</div>
+                        </div>
+                    </div>`;
+            });
+
+            // Top Players
+            const playerContainer = document.getElementById('player-list');
+            playerContainer.innerHTML = '';
+            database.top_players.forEach(item => {
+                playerContainer.innerHTML += `
+                    <div class="card">
+                        <div class="card-left">
+                            <div class="rank-badge">#${item.rank}</div>
+                            <div class="level-info">
+                                <div class="title">${item.name}</div>
+                                <div class="publisher">Nation: <strong>${item.nationality}</strong></div>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <span class="score-tag">${item.score} pts</span>
+                        </div>
+                    </div>`;
+            });
+
+            // ILL List
+            const illContainer = document.getElementById('ill-list');
+            illContainer.innerHTML = '';
+            database.impossible_levels_list.forEach(item => {
+                illContainer.innerHTML += `
+                    <div class="card">
+                        <div class="card-left">
+                            <div class="rank-badge">#${item.rank}</div>
+                            <div class="level-info">
+                                <div class="title">${item.name}</div>
+                                <div class="publisher">by <strong>${item.creators}</strong></div>
+                            </div>
+                        </div>
+                        <div class="card-right">
+                            <div class="extra-info">${item.tps_fps}</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
